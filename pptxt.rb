@@ -6,8 +6,18 @@ require "pathname"
 def parse(args)
     options = Hash.new
     options["init"] = false
+    options["global"] = false
     parser = OptionParser.new do |opts|
         opts.banner = "Usage: #{File.basename($0)} [OPTIONS] [pptx]"
+
+        opts.on(
+            "-g",
+            "--global-init",
+            "Configure git to use pptxt globally"
+        ) do
+            options["init"] = true
+            options["global"] = true
+        end
 
         opts.on("-h", "--help", "Display this help message") do
             puts opts
@@ -57,10 +67,22 @@ options = parse(ARGV)
 # Initialize git config if specified
 if (options["init"])
     # Configure git
-    system("git config diff.pptxt.textconv pptxt")
+    global = ""
+    global = "--global" if (options["global"])
+    system("git config #{global} diff.pptxt.textconv pptxt")
 
     # Setup .gitattributes
     filename = ".gitattributes"
+    if (options["global"])
+        global_cfg = "git config --global"
+        filename = %x(#{global_cfg} core.attributesfile).strip
+        if (filename.nil? || filename.empty?)
+            filename = Pathname.new("~/.gitattributes").expand_path
+            system(
+                "#{global_cfg} core.attributesfile \"#{filename}\""
+            )
+        end
+    end
     new_line = "*.pptx diff=pptxt\n"
 
     if (Pathname.new(filename).expand_path.exist?)
