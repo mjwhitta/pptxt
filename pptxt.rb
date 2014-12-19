@@ -64,20 +64,42 @@ def detailed_output(lines)
     end
 end
 
+def handle_format(str, format)
+    case format
+    when "bullet"
+        return "- #{str}"
+    when /[0-9]+/
+        return "#{format}. #{str}"
+    end
+
+    return str
+end
+
 def output(lines, git = false)
     can_be_newline = false
     first_time = false
     ignore = false
     in_subtitle = false
     in_title = false
-    was_newline = false
+    was_newline = true
 
     title = ""
     subtitle = ""
     content = ""
 
+    format = "bullet"
+
     lines.each do |line|
         case line
+        when "<a:p>"
+            # Assume bullet list
+            format = "bullet"
+        when %r{<.?a:buNone}
+            # Regular text
+            format = "text"
+        when %r{<.?a:buAutoNum}
+            # Numbered list
+            format = "1"
         when %r{<p:cNvPr .*Title}
             # Setup titles
             in_title = true
@@ -99,7 +121,11 @@ def output(lines, git = false)
             elsif(ignore)
                 break
             else
-                content += line[5..-1]
+                if (was_newline)
+                    content += handle_format(line[5..-1], format)
+                else
+                    content += line[5..-1]
+                end
             end
 
             first_time = false
