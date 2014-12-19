@@ -30,16 +30,61 @@ def detailed_output(lines)
 end
 
 def output(lines)
+    can_be_newline = false
+    first_time = false
+    ignore = false
+    in_subtitle = false
+    in_title = false
+    was_newline = false
+
     lines.each do |line|
         case line
+        when %r{<p:cNvPr .*Title}
+            # Handle titles
+            in_title = true
+            first_time = true
+            print "# "
+        when %r{<p:cNvPr .*Subtitle}
+            # Handle subtitles
+            in_subtitle = true
+            first_time = true
+            print "## "
         when %r{<a:t>.*}
+            break if (ignore)
+
+            # Handle text
+            print "  " if (in_title && !first_time && was_newline)
+            print "   " if (in_subtitle && !first_time && was_newline)
             print line[5..-1]
-        when "<a:br>", "</a:p>"
+
+            first_time = false
+            was_newline = false
+        when "</a:t>"
+            # Handle newlines
+            can_be_newline = true
+        when "</p:txBody>"
+            # Handle newlines
             puts
+
+            can_be_newline = false
+            was_newline = true
+            in_title = false
+            in_subtitle = false
+        when "<a:br>", "</a:p>"
+            # Handle newlines
+            puts if (can_be_newline)
+
+            can_be_newline = false
+            was_newline = true
+        when "<p:graphicFrame>"
+            ignore = true
+        when "</p:graphicFrame>"
+            ignore = false
         else
             # Ignore
         end
     end
+    puts
 end
 
 def parse(args)
