@@ -88,6 +88,7 @@ def output(lines, git = false)
     content = ""
 
     format = "bullet"
+    number = "0"
 
     lines.each do |line|
         case line
@@ -97,9 +98,15 @@ def output(lines, git = false)
         when %r{<.?a:buNone}
             # Regular text
             format = "text"
+            number = "0"
         when %r{<.?a:buAutoNum}
             # Numbered list
-            format = "1"
+            if (number.to_i == 0)
+                number = "1"
+            else
+                number = (number.to_i + 1).to_s
+            end
+            format = number
         when %r{<p:cNvPr .*Title}
             # Setup titles
             in_title = true
