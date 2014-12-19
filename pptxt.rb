@@ -3,6 +3,41 @@
 require "optparse"
 require "pathname"
 
+class Slide < Hash
+    def content(content = nil)
+        self["content"] = content if (content)
+        self["content"] = nil if (content && content.empty?)
+        return self["content"]
+    end
+
+    def initialize(title = nil, subtitle = nil, content = nil)
+        self.title(title)
+        self.subtitle(subtitle)
+        self.content(content)
+    end
+
+    def subtitle(subtitle = nil)
+        self["subtitle"] = subtitle if (subtitle)
+        self["subtitle"] = nil if (subtitle && subtitle.empty?)
+        return self["subtitle"]
+    end
+
+    def title(title = nil)
+        self["title"] = title if (title)
+        self["title"] = nil if (title && title.empty?)
+        return self["title"]
+    end
+
+    def to_s()
+        out = []
+        out.push(title) if (title)
+        out.push(subtitle) if (subtitle)
+        out.push("\n") if (title || subtitle)
+        out.push(content) if (content)
+        return out.join.strip
+    end
+end
+
 def detailed_output(lines)
     num_indents = 0
     lines.each do |line|
@@ -37,46 +72,63 @@ def output(lines)
     in_title = false
     was_newline = false
 
+    title = ""
+    subtitle = ""
+    content = ""
+
     lines.each do |line|
         case line
         when %r{<p:cNvPr .*Title}
-            # Handle titles
+            # Setup titles
             in_title = true
             first_time = true
-            print "# "
+            title += "# "
         when %r{<p:cNvPr .*Subtitle}
-            # Handle subtitles
+            # Setup subtitles
             in_subtitle = true
             first_time = true
-            print "## "
+            subtitle += "## "
         when %r{<a:t>.*}
-            break if (ignore)
-
             # Handle text
-            print "  " if (in_title && !first_time && was_newline)
-            print "   " if (in_subtitle && !first_time && was_newline)
-            print line[5..-1]
+            if (in_title)
+                title += "  " if (!first_time && was_newline)
+                title += line[5..-1]
+            elsif (in_subtitle)
+                subtitle += "   " if (!first_time && was_newline)
+                subtitle += line[5..-1]
+            elsif(ignore)
+                break
+            else
+                content += line[5..-1]
+            end
 
             first_time = false
             was_newline = false
         when "</a:t>"
-            # Handle newlines
+            # Setup newlines
             can_be_newline = true
-        when "</p:txBody>"
+        when "<a:br>", "</a:p>", "</p:txBody>"
             # Handle newlines
-            puts
+            if (in_title)
+                title += "\n" if (can_be_newline)
+            elsif (in_subtitle)
+                subtitle += "\n" if (can_be_newline)
+            elsif(ignore)
+                break
+            else
+                content += "\n" if (can_be_newline)
+            end
 
             can_be_newline = false
             was_newline = true
-            in_title = false
-            in_subtitle = false
-        when "<a:br>", "</a:p>"
-            # Handle newlines
-            puts if (can_be_newline)
 
-            can_be_newline = false
-            was_newline = true
+            if (line == "</p:txBody>")
+                in_title = false
+                in_subtitle = false
+            end
         when "<p:graphicFrame>"
+            # Ignore graphics for now
+            # FIXME
             ignore = true
         when "</p:graphicFrame>"
             ignore = false
@@ -84,6 +136,7 @@ def output(lines)
             # Ignore
         end
     end
+    puts Slide.new(title, subtitle, content)
     puts
 end
 
