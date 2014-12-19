@@ -48,5 +48,5 @@ $ pptxt --global-init
 
 ## TODO
 
- - Support bullet/number lists in simple output (not full xml)
+ - Make increment numbers in number lists
  - Make comments/documentation more thorough.
