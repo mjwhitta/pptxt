@@ -3,12 +3,47 @@
 require "optparse"
 require "pathname"
 
+def detailed_output(lines)
+    num_indents = 0
+    lines.each do |line|
+        indents = Array.new(num_indents, "  ").join
+        case line
+        when %r{^<\?.*$}, ""
+            # Ignore xml version and blank lines
+        when %r{^<.*/>$}
+            # Don't indent if one-liner
+            puts "#{indents}#{line}"
+        when %r{^<[^/].*$}
+            # Indent after opening tag
+            puts "#{indents}#{line}"
+            num_indents += 1
+        when %r{^</.*$}
+            # Remove indent after closing tag
+            num_indents -= 1
+            indents = Array.new(num_indents, "  ").join
+            puts "#{indents}#{line}"
+        else
+            # Log unsupported format
+            puts "UNSUPPORTED FORMAT: #{line}"
+        end
+    end
+end
+
+def output(lines)
+    # TODO
+end
+
 def parse(args)
     options = Hash.new
-    options["init"] = false
+    options["detailed"] = false
     options["global"] = false
+    options["init"] = false
     parser = OptionParser.new do |opts|
         opts.banner = "Usage: #{File.basename($0)} [OPTIONS] [pptx]"
+
+        opts.on("-d", "--detailed", "Display full xml") do
+            options["detailed"] = true
+        end
 
         opts.on(
             "-g",
@@ -125,28 +160,13 @@ slides.each do |slide|
     # Extract xml data
     xml_data = %x(unzip -qc "#{pptx}" #{slide})
 
-    # Make it human readable and parse
-    num_indents = 0
-    xml_data.gsub("<", "\n<").split("\n").each do |line|
-        indents = Array.new(num_indents, "  ").join
-        case line
-        when %r{^<\?.*$}, ""
-            # Ignore xml version and blank lines
-        when %r{^<.*/>$}
-            # Don't indent if one-liner
-            puts "#{indents}#{line}"
-        when %r{^<[^/].*$}
-            # Indent after opening tag
-            puts "#{indents}#{line}"
-            num_indents += 1
-        when %r{^</.*$}
-            # Remove indent after closing tag
-            num_indents -= 1
-            indents = Array.new(num_indents, "  ").join
-            puts "#{indents}#{line}"
-        else
-            # Log unsupported format
-            puts "UNSUPPORTED FORMAT: #{line}"
-        end
+    lines = xml_data.gsub("<", "\n<").split("\n")
+    options["detailed"] = true # FIXME
+    if (options["detailed"])
+        # Display full xml
+        detailed_output(lines)
+    else
+        # Make it human readable and parse
+        output(lines)
     end
 end
