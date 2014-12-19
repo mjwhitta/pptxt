@@ -64,15 +64,15 @@ def detailed_output(lines)
     end
 end
 
-def handle_format(str, format)
+def handle_format(str, format, lvl)
     case format
     when "bullet"
-        return "- #{str}"
-    when /[0-9]+/
-        return "#{format}. #{str}"
+        return "#{Array.new(lvl, "  ").join}- #{str}"
+    when "number"
+        return "#{Array.new(lvl, "  ").join}1. #{str}"
+    else
+        return str
     end
-
-    return str
 end
 
 def output(lines, git = false)
@@ -88,25 +88,22 @@ def output(lines, git = false)
     content = ""
 
     format = "bullet"
-    number = "0"
+    lvl = 0
 
     lines.each do |line|
         case line
         when "<a:p>"
             # Assume bullet list
             format = "bullet"
+        when %r{<a:pPr.*lvl="[^"]+".*}
+            # Sub bullet/item
+            lvl = line[%r{<a:pPr.*lvl="([^"]+)".*}, 1].to_i
         when %r{<.?a:buNone}
             # Regular text
             format = "text"
-            number = "0"
         when %r{<.?a:buAutoNum}
             # Numbered list
-            if (number.to_i == 0)
-                number = "1"
-            else
-                number = (number.to_i + 1).to_s
-            end
-            format = number
+            format = "number"
         when %r{<p:cNvPr .*Title}
             # Setup titles
             in_title = true
@@ -129,7 +126,7 @@ def output(lines, git = false)
                 break
             else
                 if (was_newline)
-                    content += handle_format(line[5..-1], format)
+                    content += handle_format(line[5..-1], format, lvl)
                 else
                     content += line[5..-1]
                 end
@@ -137,6 +134,7 @@ def output(lines, git = false)
 
             first_time = false
             was_newline = false
+            lvl = 0
         when "</a:t>"
             # Setup newlines
             can_be_newline = true
