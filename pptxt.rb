@@ -64,7 +64,7 @@ def detailed_output(lines)
     end
 end
 
-def output(lines)
+def output(lines, git = false)
     can_be_newline = false
     first_time = false
     ignore = false
@@ -136,13 +136,16 @@ def output(lines)
             # Ignore
         end
     end
+    puts Array.new(70, "_").join if (!git)
     puts Slide.new(title, subtitle, content)
+    puts Array.new(70, "_").join if (!git)
     puts
 end
 
 def parse(args)
     options = Hash.new
     options["detailed"] = false
+    options["git"] = false
     options["global"] = false
     options["init"] = false
     parser = OptionParser.new do |opts|
@@ -150,6 +153,10 @@ def parse(args)
 
         opts.on("-d", "--detailed", "Display full xml") do
             options["detailed"] = true
+        end
+
+        opts.on("--git", "Hide the slide dividers for git-diff") do
+            options["git"] = true
         end
 
         opts.on(
@@ -211,7 +218,7 @@ if (options["init"])
     # Configure git
     global = ""
     global = "--global" if (options["global"])
-    system("git config #{global} diff.pptxt.textconv pptxt")
+    system("git config #{global} diff.pptxt.textconv \"pptxt --git\"")
 
     # Setup .gitattributes
     filename = ".gitattributes"
@@ -273,6 +280,6 @@ slides.each do |slide|
         detailed_output(lines)
     else
         # Make it human readable and parse
-        output(lines)
+        output(lines, options["git"])
     end
 end
