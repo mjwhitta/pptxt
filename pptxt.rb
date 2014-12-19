@@ -140,6 +140,7 @@ def output(lines, git = false)
     puts Slide.new(title, subtitle, content)
     puts Array.new(70, "_").join if (!git)
     puts
+    puts
 end
 
 def parse(args)
