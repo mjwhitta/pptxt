@@ -25,6 +25,9 @@ $ ./install_pptxt.sh ~/scripts
 ```bash
 $ pptxt --help
 Usage: pptxt [OPTIONS] [pptx]
+    -d, --detailed                   Display full xml
+        --git                        Hide the slide dividers for git-diff
+    -g, --global-init                Configure git to use pptxt globally
     -h, --help                       Display this help message
     -i, --init                       Initialize git repo to use pptxt
 ```
@@ -37,7 +40,13 @@ $ pptxt --init
 
 This command creates (or appends to) the `.gitattributes` file and configures git to use pptxt for git-diff.
 
+If you would rather configure pptxt to be used globally, run the following command:
+
+```bash
+$ pptxt --global-init
+```
+
 ## TODO
 
- - Add the ability to only show slide contents, not full xml
+ - Support bullet/number lists in simple output (not full xml)
  - Make comments/documentation more thorough.
