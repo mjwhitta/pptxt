@@ -30,7 +30,16 @@ def detailed_output(lines)
 end
 
 def output(lines)
-    # TODO
+    lines.each do |line|
+        case line
+        when %r{<a:t>.*}
+            print line[5..-1]
+        when "<a:br>", "</a:p>"
+            puts
+        else
+            # Ignore
+        end
+    end
 end
 
 def parse(args)
@@ -152,7 +161,7 @@ end
 # Get list of slides
 slides = %x(
     unzip -l "#{pptx}" | \grep -E "ppt/slides/[^_]" |
-        awk '{print $4}' | sort
+        awk '{print $4}' | sort -k 1.17n
 ).split("\n")
 
 # Loop through slides
@@ -161,7 +170,6 @@ slides.each do |slide|
     xml_data = %x(unzip -qc "#{pptx}" #{slide})
 
     lines = xml_data.gsub("<", "\n<").split("\n")
-    options["detailed"] = true # FIXME
     if (options["detailed"])
         # Display full xml
         detailed_output(lines)
