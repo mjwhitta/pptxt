@@ -2,7 +2,7 @@
 
 ## What is it?
 
-This is a tool that can extract the xml info from a pptx. It was intended to be used with git for seeing changes between revisions.
+This tool can extract the xml info from a pptx and convert to human-readable text. It was intended to be used with git for seeing changes between revisions.
 
 ## How to install
 
@@ -14,7 +14,7 @@ $ cd pptxt
 $ ./install_pptxt.sh
 ```
 
-The default install directory is `~/bin`. You can change this by passing in the install directory of you choice like below:
+The default install directory is `~/bin`. You can change this by providing the install directory of your choice like below:
 
 ```bash
 $ ./install_pptxt.sh ~/scripts
@@ -48,5 +48,5 @@ $ pptxt --global-init
 
 ## TODO
 
- - Make increment numbers in number lists
+ - Increment numbers in number lists
  - Make comments/documentation more thorough.
