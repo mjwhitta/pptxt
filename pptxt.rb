@@ -75,7 +75,7 @@ def handle_format(str, format, lvl)
     end
 end
 
-def output(lines, git = false)
+def output(lines, git = false, count = 0)
     can_be_newline = false
     first_time = false
     ignore = false
@@ -86,6 +86,8 @@ def output(lines, git = false)
     title = ""
     subtitle = ""
     content = ""
+
+    divider = Array.new(70, "_").join
 
     format = "bullet"
     lvl = 0
@@ -167,9 +169,13 @@ def output(lines, git = false)
             # Ignore
         end
     end
-    puts Array.new(70, "_").join if (!git)
+    puts divider if (!git)
     puts Slide.new(title, subtitle, content)
-    puts Array.new(70, "_").join if (!git)
+    if (count > 0)
+        puts "#{divider}#{count}" if (!git)
+    else
+        puts divider if (!git)
+    end
     puts
     puts
 end
@@ -302,6 +308,7 @@ slides = %x(
 ).split("\n")
 
 # Loop through slides
+count = 0
 slides.each do |slide|
     # Extract xml data
     xml_data = %x(unzip -qc "#{pptx}" #{slide})
@@ -312,6 +319,7 @@ slides.each do |slide|
         detailed_output(lines)
     else
         # Make it human readable and parse
-        output(lines, options["git"])
+        count += 1
+        output(lines, options["git"], count)
     end
 end
