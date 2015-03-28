@@ -9,7 +9,7 @@ This tool can extract the xml info from a pptx and convert to human-readable tex
 Open a terminal and run the following:
 
 ```bash
-$ git clone https://bitbucket.org/mjwhitta/pptxt
+$ git clone https://gitlab.com/mjwhitta/pptxt
 $ cd pptxt
 $ ./install_pptxt.sh
 ```
