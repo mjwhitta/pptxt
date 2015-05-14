@@ -130,8 +130,13 @@ def output(lines, git = false, count = 0)
             else
                 if (was_newline)
                     list_index = numlist_count[lvl] || 1
-                    content += handle_format(line[5..-1], format, lvl, list_index)
-                    if format == "number"
+                    content += handle_format(
+                        line[5..-1],
+                        format,
+                        lvl,
+                        list_index
+                    )
+                    if (format == "number")
                         numlist_count[lvl] = list_index + 1
                     end
                 else
