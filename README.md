@@ -48,5 +48,4 @@ $ pptxt --global-init
 
 ## TODO
 
- - Increment numbers in number lists
  - Make comments/documentation more thorough.
