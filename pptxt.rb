@@ -64,12 +64,12 @@ def detailed_output(lines)
     end
 end
 
-def handle_format(str, format, lvl)
+def handle_format(str, format, lvl, list_index)
     case format
     when "bullet"
         return "#{Array.new(lvl, "  ").join}- #{str}"
     when "number"
-        return "#{Array.new(lvl, "  ").join}1. #{str}"
+        return "#{Array.new(lvl, "  ").join}#{list_index}. #{str}"
     else
         return str
     end
@@ -91,6 +91,7 @@ def output(lines, git = false, count = 0)
 
     format = "bullet"
     lvl = 0
+    numlist_count = []
 
     lines.each do |line|
         case line
@@ -128,7 +129,11 @@ def output(lines, git = false, count = 0)
                 break
             else
                 if (was_newline)
-                    content += handle_format(line[5..-1], format, lvl)
+                    list_index = numlist_count[lvl] || 1
+                    content += handle_format(line[5..-1], format, lvl, list_index)
+                    if format == "number"
+                        numlist_count[lvl] = list_index + 1
+                    end
                 else
                     content += line[5..-1]
                 end
