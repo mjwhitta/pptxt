@@ -11,13 +11,13 @@ Open a terminal and run the following:
 ```bash
 $ git clone https://gitlab.com/mjwhitta/pptxt
 $ cd pptxt
-$ ./install_pptxt.sh
+$ ./install.sh
 ```
 
 The default install directory is `~/bin`. You can change this by providing the install directory of your choice like below:
 
 ```bash
-$ ./install_pptxt.sh ~/scripts
+$ ./install.sh ~/scripts
 ```
 
 ## How to use
