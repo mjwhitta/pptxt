@@ -311,19 +311,20 @@ if (options["init"])
     end
     new_line = "*.pptx diff=pptxt\n"
 
-    if (Pathname.new(filename).expand_path.exist?)
-        File.open(filename) do |f|
+    file = Pathname.new(filename).expand_path
+    if (file.exist?)
+        File.open(file) do |f|
             f.each_line do |line|
                 if (line == new_line)
                     exit Exit::GOOD
                 end
             end
         end
-        File.open(filename, "a") do |f|
+        File.open(file, "a") do |f|
             f.write(new_line)
         end
     else
-        File.open(filename, "w") do |f|
+        File.open(file, "w") do |f|
             f.write(new_line)
         end
     end
