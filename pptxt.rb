@@ -1,7 +1,17 @@
 #!/usr/bin/env ruby
 
+require "io/wait"
 require "optparse"
 require "pathname"
+
+class Exit
+    GOOD = 0
+    INVALID_OPTION = 1
+    MISSING_ARGUMENT = 2
+    EXTRA_ARGUMENTS = 3
+    FILE_DOES_NOT_EXIST = 4
+    MISSING_UTILITY = 5
+end
 
 class Slide < Hash
     def content(content = nil)
@@ -196,6 +206,7 @@ def parse(args)
     options["git"] = false
     options["global"] = false
     options["init"] = false
+    options["slideshow"] = false
     parser = OptionParser.new do |opts|
         opts.banner = "Usage: #{File.basename($0)} [OPTIONS] [pptx]"
 
@@ -218,19 +229,37 @@ def parse(args)
 
         opts.on("-h", "--help", "Display this help message") do
             puts opts
-            exit
+            exit Exit::GOOD
         end
 
         opts.on("-i", "--init", "Initialize git repo to use pptxt") do
             options["init"] = true
         end
-    end
-    parser.parse!
 
-    if (args.length > 0)
+        opts.on("-s", "--slideshow", "Display as slideshow") do
+            options["slideshow"] = true
+        end
+    end
+
+    begin
+        parser.parse!
+    rescue OptionParser::InvalidOption => e
+        puts e.message
+        puts parser
+        exit Exit::INVALID_OPTION
+    rescue OptionParser::MissingArgument => e
+        puts e.message
+        puts parser
+        exit Exit::MISSING_ARGUMENT
+    end
+
+    if (args.length > 1)
+        puts parser
+        exit Exit::EXTRA_ARGUMENTS
+    elsif (!args.empty?)
         if (!Pathname.new(args[0]).expand_path.exist?)
             puts "#{args[0]} does not exist!"
-            exit 2
+            exit Exit::FILE_DOES_NOT_EXIST
         end
 
         options["pptx"] = args[0]
@@ -255,7 +284,7 @@ end
 
 if (!which("unzip"))
     puts "Please install the unzip utility and try again!"
-    exit 3
+    exit Exit::MISSING_UTILITY
 end
 
 # Parse cli args
@@ -286,7 +315,7 @@ if (options["init"])
         File.open(filename) do |f|
             f.each_line do |line|
                 if (line == new_line)
-                    exit
+                    exit Exit::GOOD
                 end
             end
         end
@@ -299,16 +328,16 @@ if (options["init"])
         end
     end
 
-    exit
+    exit Exit::GOOD
 end
 
 # Handle empty/null input
 if (!options.has_key?("pptx"))
-    exit
+    exit Exit::MISSING_ARGUMENT
 end
 pptx = options["pptx"].strip
 if (pptx == "/dev/null")
-    exit
+    exit Exit::GOOD
 end
 
 # Get list of slides
@@ -317,19 +346,62 @@ slides = %x(
         awk '{print $4}' | sort -k 1.17n
 ).split("\n")
 
-# Loop through slides
-count = 0
-slides.each do |slide|
-    # Extract xml data
-    xml_data = %x(unzip -qc "#{pptx}" #{slide})
+if (!options["slideshow"])
+    # Loop through slides
+    count = 0
+    slides.each do |slide|
+        xml_data = %x(unzip -qc "#{pptx}" #{slide})
 
-    lines = xml_data.gsub("<", "\n<").split("\n")
-    if (options["detailed"])
-        # Display full xml
-        detailed_output(lines)
-    else
+        lines = xml_data.gsub("<", "\n<").split("\n")
+        if (options["detailed"])
+            # Display full xml
+            detailed_output(lines)
+        else
+            # Make it human readable and parse
+            count += 1
+            output(lines, options["git"], count)
+        end
+    end
+else
+    quit = false
+    count = 1
+
+    while (!quit)
+        slide = slides[count - 1]
+        xml_data = %x(unzip -qc "#{pptx}" #{slide})
+        lines = xml_data.gsub("<", "\n<").split("\n")
+
         # Make it human readable and parse
-        count += 1
+        system("clear")
+        puts
         output(lines, options["git"], count)
+        puts "j:Next k:Previous q:Quit"
+
+        answer = nil
+        while (!answer)
+            begin
+                system("stty raw -echo")
+                if $stdin.ready?
+                    answer = $stdin.getc.chr
+                else
+                    sleep 0.1
+                end
+            ensure
+                system("stty -raw echo")
+            end
+        end
+        puts
+
+        case answer
+        when "j", "J"
+            count += 1
+            count = slides.length if (count > slides.length)
+        when "k", "K"
+            count -= 1
+            count = 1 if (count == 0)
+        when "q", "Q", "\x03"
+            # Quit or ^C
+            quit = true
+        end
     end
 end
