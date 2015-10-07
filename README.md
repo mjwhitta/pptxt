@@ -2,50 +2,48 @@
 
 ## What is it?
 
-This tool can extract the xml info from a pptx and convert to human-readable text. It was intended to be used with git for seeing changes between revisions.
-
-## How to install
-
-Open a terminal and run the following:
-
-```bash
-$ git clone https://gitlab.com/mjwhitta/pptxt
-$ cd pptxt
-$ ./install.sh
-```
-
-The default install directory is `~/bin`. You can change this by providing the install directory of your choice like below:
-
-```bash
-$ ./install.sh ~/scripts
-```
+This gem can extract the xml info from a pptx and convert to
+human-readable text. It was intended to be used with git for seeing
+changes between revisions.
 
 ## How to use
 
 ```bash
 $ pptxt --help
 Usage: pptxt [OPTIONS] [pptx]
-    -d, --detailed                   Display full xml
-        --git                        Hide the slide dividers for git-diff
-    -g, --global-init                Configure git to use pptxt globally
-    -h, --help                       Display this help message
-    -i, --init                       Initialize git repo to use pptxt
+    -c, --configure               Configure git repo to use pptxt
+    -d, --detailed                Display full xml
+        --git                     Hide the slide dividers for git-diff
+    -g, --global-config           Configure git to use pptxt globally
+    -h, --help                    Display this help message
+    -s, --slideshow               Display as slideshow
 ```
 
-Once pptxt has been installed, `cd` to the top-level of your repo and run the following command:
+Once pptxt has been installed, `cd` to the top-level of your repo and
+run the following command:
 
 ```bash
 $ pptxt --init
 ```
 
-This command creates (or appends to) the `.gitattributes` file and configures git to use pptxt for git-diff.
+This command creates (or appends to) the `.gitattributes` file and
+configures git to use pptxt for git-diff.
 
-If you would rather configure pptxt to be used globally, run the following command:
+If you would rather configure pptxt to be used globally, run the
+following command:
 
 ```bash
 $ pptxt --global-init
 ```
 
+## Links
+
+- [Homepage](http://mjwhitta.github.io/pptxt)
+- [Source](https://gitlab.com/mjwhitta/pptxt)
+- [Mirror](https://github.com/mjwhitta/pptxt)
+- [RubyGems](https://rubygems.org/gems/pptxt)
+
 ## TODO
 
- - Make comments/documentation more thorough.
+- [ ] Better README
+- [ ] RDoc

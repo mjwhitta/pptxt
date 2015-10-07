@@ -1,0 +1,9 @@
+class PPtxtExitStatus
+    GOOD = 0
+    INVALID_OPTION = 1
+    INVALID_ARGUMENT = 2
+    MISSING_ARGUMENT = 3
+    EXTRA_ARGUMENTS = 4
+    FILE_DOES_NOT_EXIST = 5
+    MISSING_UTILITY = 6
+end

@@ -1,0 +1,151 @@
+#!/usr/bin/env ruby
+
+require "io/wait"
+require "optparse"
+require "pathname"
+require "pptxt"
+require "pptxt_exit_status"
+require "pptxt_slide"
+
+def parse(args)
+    options = Hash.new
+    options["detailed"] = false
+    options["git"] = false
+    options["pptx"] = nil
+    options["slideshow"] = false
+
+    parser = OptionParser.new do |opts|
+        opts.banner = "Usage: #{File.basename($0)} [OPTIONS] [pptx]"
+
+        opts.on(
+            "-c",
+            "--configure",
+            "Configure git repo to use pptxt"
+        ) do
+            PPtxt.configure_git
+            exit PPtxtExitStatus::GOOD
+        end
+
+        opts.on("-d", "--detailed", "Display full xml") do
+            options["detailed"] = true
+        end
+
+        opts.on("--git", "Hide the slide dividers for git-diff") do
+            options["git"] = true
+        end
+
+        opts.on(
+            "-g",
+            "--global-config",
+            "Configure git to use pptxt globally"
+        ) do
+            PPtxt.configure_git(true)
+            exit PPtxtExitStatus::GOOD
+        end
+
+        opts.on("-h", "--help", "Display this help message") do
+            puts opts
+            exit PPtxtExitStatus::GOOD
+        end
+
+        opts.on("-s", "--slideshow", "Display as slideshow") do
+            options["slideshow"] = true
+        end
+    end
+
+    begin
+        parser.parse!
+    rescue OptionParser::InvalidOption => e
+        puts e.message
+        puts parser
+        exit PPtxtExitStatus::INVALID_OPTION
+    rescue OptionParser::InvalidArgument => e
+        puts e.message
+        puts parser
+        exit PPtxtExitStatus::INVALID_ARGUMENT
+    rescue OptionParser::MissingArgument => e
+        puts e.message
+        puts parser
+        exit PPtxtExitStatus::MISSING_ARGUMENT
+    end
+
+    if (args.empty?)
+        puts parser
+        exit PPtxtExitStatus::MISSING_ARGUMENT
+    elsif (args.length > 1)
+        puts parser
+        exit PPtxtExitStatus::EXTRA_ARGUMENTS
+    end
+
+    if (!Pathname.new(args[0]).expand_path.exist?)
+        puts "#{args[0]} does not exist!"
+        exit PPtxtExitStatus::FILE_DOES_NOT_EXIST
+    end
+
+    options["pptx"] = args[0].strip
+    if (options["pptx"] == "/dev/null")
+        exit PPtxtExitStatus::GOOD
+    end
+
+    return options
+end
+
+# Parse CLI args
+options = parse(ARGV)
+
+# Get slides
+slides = PPtxt.new(options["pptx"]).slides
+
+if (!options["slideshow"])
+    # Loop through slides
+    slides.each do |slide|
+        if (options["detailed"])
+            puts slide.detailed
+        elsif (options["git"])
+            puts slide.diffable
+            puts
+        else
+            puts slide
+            puts
+        end
+    end
+else
+    quit = false
+    count = 0
+
+    while (!quit)
+        slide = slides[count]
+
+        # Make it human readable and parse
+        system("clear")
+        puts
+        puts slide
+        puts
+        puts "j:Next k:Previous q:Quit"
+
+        answer = nil
+        while (!answer)
+            begin
+                system("stty raw -echo")
+                if $stdin.ready?
+                    answer = $stdin.getc.chr
+                else
+                    sleep 0.1
+                end
+            ensure
+                system("stty -raw echo")
+            end
+        end
+        puts
+
+        case answer
+        when "j", "J"
+            count += 1 if (count < (slides.length - 1))
+        when "k", "K"
+            count -= 1 if (count > 0)
+        when "q", "Q", "\x03"
+            # Quit or ^C
+            quit = true
+        end
+    end
+end
