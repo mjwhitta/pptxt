@@ -23,7 +23,7 @@ Once pptxt has been installed, `cd` to the top-level of your repo and
 run the following command:
 
 ```bash
-$ pptxt --init
+$ pptxt --configure
 ```
 
 This command creates (or appends to) the `.gitattributes` file and
@@ -33,7 +33,7 @@ If you would rather configure pptxt to be used globally, run the
 following command:
 
 ```bash
-$ pptxt --global-init
+$ pptxt --global-config
 ```
 
 ## Links
