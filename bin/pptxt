@@ -4,8 +4,16 @@ require "io/wait"
 require "optparse"
 require "pathname"
 require "pptxt"
-require "pptxt_exit_status"
-require "pptxt_slide"
+
+class PPtxtExit
+    GOOD = 0
+    INVALID_OPTION = 1
+    INVALID_ARGUMENT = 2
+    MISSING_ARGUMENT = 3
+    EXTRA_ARGUMENTS = 4
+    FILE_DOES_NOT_EXIST = 5
+    MISSING_UTILITY = 6
+end
 
 def parse(args)
     options = Hash.new
@@ -23,7 +31,7 @@ def parse(args)
             "Configure git repo to use pptxt"
         ) do
             PPtxt.configure_git
-            exit PPtxtExitStatus::GOOD
+            exit PPtxtExit::GOOD
         end
 
         opts.on("-d", "--detailed", "Display full xml") do
@@ -40,12 +48,12 @@ def parse(args)
             "Configure git to use pptxt globally"
         ) do
             PPtxt.configure_git(true)
-            exit PPtxtExitStatus::GOOD
+            exit PPtxtExit::GOOD
         end
 
         opts.on("-h", "--help", "Display this help message") do
             puts opts
-            exit PPtxtExitStatus::GOOD
+            exit PPtxtExit::GOOD
         end
 
         opts.on("-s", "--slideshow", "Display as slideshow") do
@@ -58,33 +66,33 @@ def parse(args)
     rescue OptionParser::InvalidOption => e
         puts e.message
         puts parser
-        exit PPtxtExitStatus::INVALID_OPTION
+        exit PPtxtExit::INVALID_OPTION
     rescue OptionParser::InvalidArgument => e
         puts e.message
         puts parser
-        exit PPtxtExitStatus::INVALID_ARGUMENT
+        exit PPtxtExit::INVALID_ARGUMENT
     rescue OptionParser::MissingArgument => e
         puts e.message
         puts parser
-        exit PPtxtExitStatus::MISSING_ARGUMENT
+        exit PPtxtExit::MISSING_ARGUMENT
     end
 
     if (args.empty?)
         puts parser
-        exit PPtxtExitStatus::MISSING_ARGUMENT
+        exit PPtxtExit::MISSING_ARGUMENT
     elsif (args.length > 1)
         puts parser
-        exit PPtxtExitStatus::EXTRA_ARGUMENTS
+        exit PPtxtExit::EXTRA_ARGUMENTS
     end
 
     if (!Pathname.new(args[0]).expand_path.exist?)
         puts "#{args[0]} does not exist!"
-        exit PPtxtExitStatus::FILE_DOES_NOT_EXIST
+        exit PPtxtExit::FILE_DOES_NOT_EXIST
     end
 
     options["pptx"] = args[0].strip
     if (options["pptx"] == "/dev/null")
-        exit PPtxtExitStatus::GOOD
+        exit PPtxtExit::GOOD
     end
 
     return options

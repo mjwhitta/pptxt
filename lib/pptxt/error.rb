@@ -1,4 +1,4 @@
-module PPtxtError
+module PPtxt
     class Error < RuntimeError
     end
 

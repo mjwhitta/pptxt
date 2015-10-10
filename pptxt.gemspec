@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
     s.name = "pptxt"
-    s.version = "0.1.0"
+    s.version = "0.1.1"
     s.date = Time.new.strftime("%Y-%m-%d")
     s.summary = "Converts pptx files to human-readable text"
     s.description = "This gem can extract the xml info from a pptx " \
