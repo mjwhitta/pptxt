@@ -54,9 +54,7 @@ class PPtxt
 
         count = 0
         slides.each do |slide|
-            xml = %x(
-                unzip -qc "#{@pptx}" #{slide}).gsub("<", "\n<"
-            )
+            xml = %x(unzip -qc "#{@pptx}" #{slide}).gsub("<", "\n<")
             count += 1
             @slides.push(PPtxtSlide.new(xml, count))
         end
