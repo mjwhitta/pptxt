@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
     s.name = "pptxt"
-    s.version = "0.1.1"
+    s.version = "0.1.2"
     s.date = Time.new.strftime("%Y-%m-%d")
     s.summary = "Converts pptx files to human-readable text"
     s.description = "This gem can extract the xml info from a pptx " \
@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
     s.authors = [ "Miles Whittaker" ]
     s.email = "mjwhitta@gmail.com"
     s.executables = "pptxt"
-    s.files = Dir["lib/*.rb"]
+    s.files = Dir["lib/*.rb"] + Dir["lib/pptxt/*.rb"]
     s.homepage = "http://mjwhitta.github.io/pptxt"
     s.license = "GPL-3.0"
     s.add_development_dependency("minitest", "~> 5.8", ">= 5.8.1")

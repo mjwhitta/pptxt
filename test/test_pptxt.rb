@@ -5,7 +5,7 @@ require "pptxt"
 class PPtxtTest < Minitest::Test
     def setup
         @pptx = Pathname.new("test/test.pptx").expand_path
-        @slides = PPtxt::PPtxt.new(@pptx).slides
+        @slides = PPtxt.new(@pptx).slides
     end
 
     def test_pptxt
