@@ -1,3 +1,5 @@
+require "pptxt/error/unknown_xml_error"
+
 class PPtxt::PPtxtSlide
     def detailed
         ret = Array.new
@@ -23,7 +25,7 @@ class PPtxt::PPtxtSlide
                 indents = Array.new(num_indents, "  ").join
                 ret.push("#{indents}#{line}")
             else
-                raise PPtxt::UnknownXML.new(line)
+                raise PPtxt::Error::UnknownXML.new(line)
             end
         end
 

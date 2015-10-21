@@ -5,7 +5,7 @@ class PPtxt
 
     def self.configure_git(global = false)
         if (ScoobyDoo.where_are_you("git").nil?)
-            raise PPtxt::MissingDependency.new("git")
+            raise PPtxt::Error::MissingDependency.new("git")
         end
 
         # Configure git
@@ -66,7 +66,7 @@ class PPtxt
         @slides = Array.new
 
         if (ScoobyDoo.where_are_you("unzip").nil?)
-            raise PPtxt::MissingDependency.new("unzip")
+            raise PPtxt::Error::MissingDependency.new("unzip")
         end
 
         create_slides
@@ -74,6 +74,4 @@ class PPtxt
 end
 
 require "pptxt/error"
-require "pptxt/missing_dependency"
 require "pptxt/slide"
-require "pptxt/unknown_xml"
