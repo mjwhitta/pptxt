@@ -2,13 +2,13 @@
 
 ## What is it?
 
-This gem can extract the xml info from a pptx and convert to
+This gem can extract the xml info from a pptx file and convert it to
 human-readable text. It was intended to be used with git for seeing
 changes between revisions.
 
 ## How to use
 
-```bash
+```
 $ pptxt --help
 Usage: pptxt [OPTIONS] [pptx]
     -c, --configure               Configure git repo to use pptxt
@@ -45,5 +45,5 @@ $ pptxt --global-config
 
 ## TODO
 
-- [ ] Better README
-- [ ] RDoc
+- Better README
+- RDoc

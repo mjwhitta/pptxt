@@ -24,6 +24,11 @@ task :install => :gem do
     system("gem install pptxt*.gem")
 end
 
+desc "Push gem to rubygems.org"
+task :push => [:clean, :gem] do
+    system("gem push pptxt*.gem")
+end
+
 desc "Run tests"
 Rake::TestTask.new do |t|
     t.libs << "test"

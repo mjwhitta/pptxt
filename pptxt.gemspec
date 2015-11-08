@@ -1,11 +1,12 @@
 Gem::Specification.new do |s|
     s.name = "pptxt"
-    s.version = "0.2.1"
+    s.version = "0.2.2"
     s.date = Time.new.strftime("%Y-%m-%d")
     s.summary = "Converts pptx files to human-readable text"
     s.description = "This gem can extract the xml info from a pptx " \
-        "and convert to human-readable text. It was intended to be " \
-        "used with git for seeing changes between revisions."
+        "file and convert it to human-readable text. It was " \
+        "intended to be used with git for seeing changes between " \
+        "revisions."
     s.authors = [ "Miles Whittaker" ]
     s.email = "mjwhitta@gmail.com"
     s.executables = "pptxt"
