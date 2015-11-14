@@ -1,10 +1,16 @@
 # pptxt
 
-## What is it?
+## What is this?
 
 This gem can extract the xml info from a pptx file and convert it to
 human-readable text. It was intended to be used with git for seeing
 changes between revisions.
+
+## How to install
+
+```bash
+$ gem install pptxt
+```
 
 ## How to use
 
