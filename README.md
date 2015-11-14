@@ -44,7 +44,7 @@ $ pptxt --global-config
 
 ## Links
 
-- [Homepage](http://mjwhitta.github.io/pptxt)
+- [Homepage](https://mjwhitta.github.io/pptxt)
 - [Source](https://gitlab.com/mjwhitta/pptxt)
 - [Mirror](https://github.com/mjwhitta/pptxt)
 - [RubyGems](https://rubygems.org/gems/pptxt)
