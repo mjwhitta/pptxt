@@ -75,8 +75,11 @@ class PPtxt::PPtxtSlide
         lvl = 0
         numlist_count = Array.new
 
-        @xml.each_line do |line|
-            line.strip!
+        @xml.each_line do |raw_line|
+            line = raw_line.strip
+            raw_line.gsub!(/^ *<a:t>/, "")
+            raw_line.gsub!(/[\n\r]$/, "")
+
             case line
             when "<a:p>"
                 # Assume bullet list
@@ -104,19 +107,19 @@ class PPtxt::PPtxtSlide
                 # Handle text
                 if (in_title)
                     @title += "  " if (!first_time && was_newline)
-                    @title += line[5..-1]
+                    @title += raw_line
                 elsif (in_subtitle)
                     if (!first_time && was_newline)
                         @subtitle += "   "
                     end
-                    @subtitle += line[5..-1]
+                    @subtitle += raw_line
                 elsif(ignore)
                     break
                 else
                     if (was_newline)
                         list_index = numlist_count[lvl] || 1
                         @content += handle_format(
-                            line[5..-1],
+                            raw_line,
                             format,
                             lvl,
                             list_index
@@ -125,7 +128,7 @@ class PPtxt::PPtxtSlide
                             numlist_count[lvl] = list_index + 1
                         end
                     else
-                        @content += line[5..-1]
+                        @content += raw_line
                     end
                 end
 
