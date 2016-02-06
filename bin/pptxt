@@ -12,7 +12,6 @@ class PPtxtExit
     MISSING_ARGUMENT = 3
     EXTRA_ARGUMENTS = 4
     FILE_DOES_NOT_EXIST = 5
-    MISSING_UTILITY = 6
 end
 
 def parse(args)
@@ -23,7 +22,7 @@ def parse(args)
     options["slideshow"] = false
 
     parser = OptionParser.new do |opts|
-        opts.banner = "Usage: #{File.basename($0)} [OPTIONS] [pptx]"
+        opts.banner = "Usage: #{File.basename($0)} [OPTIONS] <pptx>"
 
         opts.on(
             "-c",

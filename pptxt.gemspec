@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
     s.name = "pptxt"
-    s.version = "0.2.4"
+    s.version = "0.2.5"
     s.date = Time.new.strftime("%Y-%m-%d")
     s.summary = "Converts pptx files to human-readable text"
     s.description =
@@ -16,5 +16,5 @@ Gem::Specification.new do |s|
     s.homepage = "https://mjwhitta.github.io/pptxt"
     s.license = "GPL-3.0"
     s.add_development_dependency("minitest", "~> 5.8", ">= 5.8.1")
-    s.add_runtime_dependency("scoobydoo", "~> 0.1", ">= 0.1.1")
+    s.add_runtime_dependency("scoobydoo", "~> 0.1", ">= 0.1.2")
 end
