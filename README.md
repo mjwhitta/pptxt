@@ -16,13 +16,14 @@ $ gem install pptxt
 
 ```
 $ pptxt --help
-Usage: pptxt [OPTIONS] [pptx]
+Usage: pptxt [OPTIONS] <pptx>
     -c, --configure               Configure git repo to use pptxt
     -d, --detailed                Display full xml
         --git                     Hide the slide dividers for git-diff
     -g, --global-config           Configure git to use pptxt globally
     -h, --help                    Display this help message
     -s, --slideshow               Display as slideshow
+    -v, --verbose                 Show backtrace when error occurs
 ```
 
 Once pptxt has been installed, `cd` to the top-level of your repo and

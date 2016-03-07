@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require "colorize"
 require "io/wait"
 require "optparse"
 require "pathname"
@@ -11,7 +12,7 @@ class PPtxtExit
     INVALID_ARGUMENT = 2
     MISSING_ARGUMENT = 3
     EXTRA_ARGUMENTS = 4
-    FILE_DOES_NOT_EXIST = 5
+    EXCEPTION = 5
 end
 
 def parse(args)
@@ -20,6 +21,7 @@ def parse(args)
     options["git"] = false
     options["pptx"] = nil
     options["slideshow"] = false
+    options["verbose"] = false
 
     parser = OptionParser.new do |opts|
         opts.banner = "Usage: #{File.basename($0)} [OPTIONS] <pptx>"
@@ -58,6 +60,14 @@ def parse(args)
         opts.on("-s", "--slideshow", "Display as slideshow") do
             options["slideshow"] = true
         end
+
+        opts.on(
+            "-v",
+            "--verbose",
+            "Show backtrace when error occurs"
+        ) do
+            options["verbose"] = true
+        end
     end
 
     begin
@@ -84,15 +94,8 @@ def parse(args)
         exit PPtxtExit::EXTRA_ARGUMENTS
     end
 
-    if (!Pathname.new(args[0]).expand_path.exist?)
-        puts "#{args[0]} does not exist!"
-        exit PPtxtExit::FILE_DOES_NOT_EXIST
-    end
-
     options["pptx"] = args[0].strip
-    if (options["pptx"] == "/dev/null")
-        exit PPtxtExit::GOOD
-    end
+    exit PPtxtExit::GOOD if (options["pptx"] == "/dev/null")
 
     return options
 end
@@ -100,59 +103,83 @@ end
 # Parse CLI args
 options = parse(ARGV)
 
-# Get slides
-slides = PPtxt.new(options["pptx"]).slides
+begin
+    # Get slides
+    slides = PPtxt.new(options["pptx"]).slides
 
-if (!options["slideshow"])
-    # Loop through slides
-    slides.each do |slide|
-        if (options["detailed"])
-            puts slide.detailed
-        elsif (options["git"])
-            puts slide.diffable
-            puts
-        else
-            puts slide
-            puts
-        end
-    end
-else
-    quit = false
-    count = 0
-
-    while (!quit)
-        slide = slides[count]
-
-        # Make it human readable and parse
-        system("clear")
-        puts
-        puts slide
-        puts
-        puts "j:Next k:Previous q:Quit"
-
-        answer = nil
-        while (!answer)
-            begin
-                system("stty raw -echo")
-                if $stdin.ready?
-                    answer = $stdin.getc.chr
-                else
-                    sleep 0.1
-                end
-            ensure
-                system("stty -raw echo")
+    if (!options["slideshow"])
+        # Loop through slides
+        slides.each do |slide|
+            if (options["detailed"])
+                puts slide.detailed
+            elsif (options["git"])
+                puts slide.diffable
+                puts
+            else
+                puts slide
+                puts
             end
         end
-        puts
+    else
+        quit = false
+        count = 0
 
-        case answer
-        when "j", "J"
-            count += 1 if (count < (slides.length - 1))
-        when "k", "K"
-            count -= 1 if (count > 0)
-        when "q", "Q", "\x03"
-            # Quit or ^C
-            quit = true
+        while (!quit)
+            slide = slides[count]
+
+            # Make it human readable and parse
+            system("clear")
+            puts
+            puts slide
+            puts
+            puts "j:Next k:Previous q:Quit"
+
+            answer = nil
+            while (!answer)
+                begin
+                    system("stty raw -echo")
+                    if $stdin.ready?
+                        answer = $stdin.getc.chr
+                    else
+                        sleep 0.1
+                    end
+                ensure
+                    system("stty -raw echo")
+                end
+            end
+            puts
+
+            case answer
+            when "j", "J"
+                count += 1 if (count < (slides.length - 1))
+            when "k", "K"
+                count -= 1 if (count > 0)
+            when "q", "Q", "\x03"
+                # Quit or ^C
+                quit = true
+            end
         end
     end
+rescue Interrupt
+    # ^C
+    # Exit gracefully
+rescue Errno::EPIPE
+    # Do nothing. This can happen if piping to another program such as
+    # less. Usually if less is closed before we're done with STDOUT.
+rescue PPtxt::Error => e
+    puts e.message
+    exit PPtxtExit::EXCEPTION
+rescue Exception => e
+    $stderr.puts "Oops! Looks like an error has occured! Maybe the " \
+        "message below will help. If not, you can use the " \
+        "--verbose flag to get a backtrace.".word_wrap
+
+    $stderr.puts e.message.white.on_red
+    if (options["verbose"])
+        e.backtrace.each do |line|
+            $stderr.puts line.light_yellow
+        end
+    end
+    exit PPtxtExit::EXCEPTION
 end
+exit PPtxtExit::GOOD

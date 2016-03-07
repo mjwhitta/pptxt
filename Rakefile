@@ -1,3 +1,4 @@
+require "colorize"
 require "rake/testtask"
 
 task :default => :gem
@@ -6,6 +7,11 @@ desc "Clean up"
 task :clean do
     system("rm -f *.gem Gemfile.lock")
     system("chmod -R go-rwx bin lib")
+end
+
+desc "Show colors from colorize"
+task :colors do
+    String.color_samples
 end
 
 desc "Test example project"

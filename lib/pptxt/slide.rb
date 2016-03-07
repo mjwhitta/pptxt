@@ -1,5 +1,3 @@
-require "pptxt/error/unknown_xml_error"
-
 class PPtxt::PPtxtSlide
     def detailed
         ret = Array.new

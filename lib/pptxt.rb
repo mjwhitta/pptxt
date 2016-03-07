@@ -47,13 +47,15 @@ class PPtxt
     end
 
     def create_slides
-        slides = %x(
-            unzip -l "#{@pptx}" | \grep -E "ppt/slides/[^_]" |
-            awk '{print $4}' | sort -k 1.17n
-        ).split("\n")
+        if (ScoobyDoo.where_are_you("unzip").nil?)
+            raise PPtxt::Error::MissingDependency.new("unzip")
+        end
 
         count = 0
-        slides.each do |slide|
+        %x(
+            unzip -l "#{@pptx}" | \grep -E "ppt/slides/[^_]" |
+            awk '{print $4}' | sort -k 1.17n
+        ).split("\n").each do |slide|
             xml = %x(unzip -qc "#{@pptx}" #{slide}).gsub("<", "\n<")
             count += 1
             @slides.push(PPtxtSlide.new(xml, count))
@@ -62,13 +64,12 @@ class PPtxt
     private :create_slides
 
     def initialize(pptx)
-        @pptx = pptx
-        @slides = Array.new
-
-        if (ScoobyDoo.where_are_you("unzip").nil?)
-            raise PPtxt::Error::MissingDependency.new("unzip")
+        if (!Pathname.new(pptx).expand_path.exist?)
+            raise PPtxt::Error::FileNotFound.new(pptx)
         end
 
+        @pptx = pptx
+        @slides = Array.new
         create_slides
     end
 end
