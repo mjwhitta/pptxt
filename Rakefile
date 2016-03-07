@@ -16,17 +16,17 @@ end
 desc "Build gem"
 task :gem do
     system("chmod -R u=rwX,go=rX bin lib")
-    system("gem build pptxt.gemspec")
+    system("gem build *.gemspec")
 end
 
 desc "Build and install gem"
 task :install => :gem do
-    system("gem install pptxt*.gem")
+    system("gem install *.gem")
 end
 
 desc "Push gem to rubygems.org"
 task :push => [:clean, :gem] do
-    system("gem push pptxt*.gem")
+    system("gem push *.gem")
 end
 
 desc "Run tests"
