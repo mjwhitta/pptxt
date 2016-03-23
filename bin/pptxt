@@ -170,6 +170,7 @@ rescue PPtxt::Error => e
     puts e.message
     exit PPtxtExit::EXCEPTION
 rescue Exception => e
+    $stderr.puts
     $stderr.puts "Oops! Looks like an error has occured! If the " \
         "error persists, file a bug at:".word_wrap
     $stderr.puts
