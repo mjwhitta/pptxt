@@ -13,6 +13,7 @@ class PPtxtExit
     MISSING_ARGUMENT = 3
     EXTRA_ARGUMENTS = 4
     EXCEPTION = 5
+    AMBIGUOUS_ARGUMENT = 6
 end
 
 def parse(args)
@@ -84,6 +85,10 @@ def parse(args)
         puts e.message
         puts parser
         exit PPtxtExit::MISSING_ARGUMENT
+    rescue OptionParser::AmbiguousOption => e
+        puts e.message
+        puts parser
+        exit PPtxtExit::AMBIGUOUS_ARGUMENT
     end
 
     if (args.empty?)
