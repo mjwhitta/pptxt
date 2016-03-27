@@ -177,12 +177,13 @@ rescue PPtxt::Error => e
 rescue Exception => e
     $stderr.puts
     $stderr.puts "Oops! Looks like an error has occured! If the " \
-        "error persists, file a bug at:".word_wrap
+        "error persists, file a bug at:"
     $stderr.puts
     $stderr.puts "    https://gitlab.com/mjwhitta/pptxt/issues"
     $stderr.puts
     $stderr.puts "Maybe the message below will help. If not, you " \
-        "can use the --verbose flag to get a backtrace.".word_wrap
+        "can use the --verbose flag to get"
+    $stderr.puts "a backtrace."
 
     $stderr.puts e.message.white.on_red
     if (options["verbose"])
