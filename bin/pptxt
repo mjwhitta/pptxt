@@ -25,6 +25,8 @@ def parse(args)
     options["verbose"] = false
 
     parser = OptionParser.new do |opts|
+        opts.summary_width = 20
+
         opts.banner = "Usage: #{File.basename($0)} [OPTIONS] <pptx>"
 
         opts.on(
