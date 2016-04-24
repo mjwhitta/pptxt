@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require "colorize"
+require "hilighter"
 require "io/wait"
 require "optparse"
 require "pathname"

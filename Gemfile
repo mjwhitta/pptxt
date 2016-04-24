@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "colorize"
+gem "hilighter"
 gem "minitest"
 gem "rake"
 gem "scoobydoo"
