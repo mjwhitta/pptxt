@@ -8,7 +8,7 @@ changes between revisions.
 
 ## How to install
 
-```bash
+```
 $ gem install pptxt
 ```
 
@@ -29,7 +29,7 @@ Usage: pptxt [OPTIONS] <pptx>
 Once pptxt has been installed, `cd` to the top-level of your repo and
 run the following command:
 
-```bash
+```
 $ pptxt --configure
 ```
 
@@ -39,13 +39,12 @@ configures git to use pptxt for git-diff.
 If you would rather configure pptxt to be used globally, run the
 following command:
 
-```bash
+```
 $ pptxt --global-config
 ```
 
 ## Links
 
-- [Homepage](https://mjwhitta.github.io/pptxt)
 - [Source](https://gitlab.com/mjwhitta/pptxt)
 - [Mirror](https://github.com/mjwhitta/pptxt)
 - [RubyGems](https://rubygems.org/gems/pptxt)
