@@ -1,5 +1,7 @@
 # pptxt
 
+<a href="https://www.buymeacoffee.com/mjwhitta">🍪 Buy me a cookie</a>
+
 ## What is this?
 
 This gem can extract the xml info from a pptx file and convert it to
